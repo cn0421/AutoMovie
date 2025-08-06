@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -153,6 +153,10 @@ LOGGING = {
             '()': 'django.utils.log.CallbackFilter',
             'callback': lambda record: not (hasattr(record, 'status_code') and record.status_code == 404 and '/media/' in record.getMessage())
         },
+        'skip_django_logs_requests': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: not ('/get_django_logs/' in record.getMessage())
+        },
     },
     'formatters': {
         'verbose': {
@@ -198,6 +202,12 @@ LOGGING = {
             'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+            'filters': ['skip_django_logs_requests'],
         },
     },
 }

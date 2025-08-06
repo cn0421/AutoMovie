@@ -318,9 +318,17 @@ class ComfyUIClient:
             raise
     
     def _load_paper_data(self, project_path: str) -> dict:
-        """从项目路径的parameter.ini加载文案数据（仅用于音频生成）"""
+        """从项目路径加载文案数据，优先从paper.json加载，如果不存在则从parameter.ini加载"""
         try:
-            # 只从parameter.ini加载文案数据，不读取paper.json
+            # 首先尝试从paper.json加载完整数据
+            paper_json_path = os.path.join(project_path, 'paper.json')
+            if os.path.exists(paper_json_path):
+                with open(paper_json_path, 'r', encoding='utf-8') as f:
+                    paper_data = json.load(f)
+                self.logger.info(f"已从paper.json加载文案数据: {paper_json_path}")
+                return paper_data
+            
+            # 如果paper.json不存在，则从parameter.ini加载（向后兼容）
             parameter_path = os.path.join(project_path, 'parameter.ini')
             if os.path.exists(parameter_path):
                 config = configparser.ConfigParser()
@@ -345,17 +353,17 @@ class ComfyUIClient:
                     # 按ID排序
                     paper_data['sentences'].sort(key=lambda x: x['id'])
                     
-                    self.logger.info(f"已从parameter.ini加载 {len(paper_data['sentences'])} 个句子用于音频生成: {parameter_path}")
+                    self.logger.info(f"已从parameter.ini加载 {len(paper_data['sentences'])} 个句子: {parameter_path}")
                     return paper_data
                 else:
                     self.logger.warning(f"parameter.ini中没有PAPER_CONTENT节: {parameter_path}")
                     return {}
             else:
-                self.logger.error(f"parameter.ini文件不存在: {parameter_path}")
+                self.logger.error(f"paper.json和parameter.ini文件都不存在: {project_path}")
                 return {}
             
         except Exception as e:
-            self.logger.error(f"从parameter.ini加载文案数据失败: {e}")
+            self.logger.error(f"加载文案数据失败: {e}")
             return {}
     
     def _build_prompt_from_paper(self, paper_data: dict, sentence_id: int) -> str:
