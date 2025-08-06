@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}首页 - AutoMovie{% endblock %}
+
+{% block page_title %}首页{% endblock %}
+{% block page_description %}项目介绍和使用说明{% endblock %}
+
+{% block content %}
+<div id="readme-content" style="line-height: 1.6; color: #333;">
+    <!-- README.md内容将在这里动态加载 -->
+</div>
+
+<script>
+// 将README内容传递给JavaScript
+window.readmeContent = `{{ readme_content|escapejs }}`;
+</script>
+<script src="{% static 'js/pages/index.js' %}"></script>
+{% endblock %}

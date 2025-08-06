@@ -1,0 +1,68 @@
+{
+  "1": {
+    "inputs": {
+      "speed": 0.9,
+      "inference_mode": "3s极速复刻",
+      "sft_dropdown": "中文女",
+      "seed": 1111,
+      "tts_text": [
+        "2",
+        0
+      ],
+      "prompt_text": [
+        "4",
+        0
+      ],
+      "prompt_wav": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "CosyVoiceNode",
+    "_meta": {
+      "title": "CosyVoiceNode"
+    }
+  },
+  "2": {
+    "inputs": {
+      "text": "%AutoMovieSound%"
+    },
+    "class_type": "TextNode",
+    "_meta": {
+      "title": "TextNode"
+    }
+  },
+  "3": {
+    "inputs": {
+      "audio": "demosun.wav",
+      "audioUI": ""
+    },
+    "class_type": "LoadAudio",
+    "_meta": {
+      "title": "LoadAudio"
+    }
+  },
+  "4": {
+    "inputs": {
+      "text": "今天天气晴朗，阳光温暖，适合去公园走走。\n我喜欢听鸟叫，看孩子们玩耍。\n科技让生活更方便，比如用手机查信息、导航。\n如果你也喜欢读书，我们可以交流。\n北京是中国的首都，有历史也有现代感。\n记得多喝水，保持健康，祝你今天好心情！"
+    },
+    "class_type": "TextNode",
+    "_meta": {
+      "title": "TextNode"
+    }
+  },
+  "5": {
+    "inputs": {
+      "filename_prefix": "audio/ComfyUI",
+      "audioUI": "",
+      "audio": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "SaveAudio",
+    "_meta": {
+      "title": "SaveAudio"
+    }
+  }
+}

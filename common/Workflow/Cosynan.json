@@ -1,0 +1,41 @@
+{
+  "1": {
+    "inputs": {
+      "speed": 1,
+      "inference_mode": "预训练音色",
+      "sft_dropdown": "中文男",
+      "seed": 1111,
+      "tts_text": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "CosyVoiceNode",
+    "_meta": {
+      "title": "CosyVoiceNode"
+    }
+  },
+  "2": {
+    "inputs": {
+      "text": "%AutoMovieSound%"
+    },
+    "class_type": "TextNode",
+    "_meta": {
+      "title": "TextNode"
+    }
+  },
+  "5": {
+    "inputs": {
+      "filename_prefix": "audio/ComfyUI",
+      "audioUI": "",
+      "audio": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "SaveAudio",
+    "_meta": {
+      "title": "SaveAudio"
+    }
+  }
+}

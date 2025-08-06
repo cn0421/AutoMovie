@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}系统设置 - AutoMovie{% endblock %}
+
+{% block page_title %}系统设置{% endblock %}
+
+{% block page_description %}配置API密钥、模型参数和系统设置{% endblock %}
+
+{% block content %}
+<div class="config-container">
+    <!-- 标签页导航 -->
+    <div class="tab-navigation">
+        <button class="tab-button active" onclick="switchTab('system-params')">⚙️ 系统参数</button>
+        <button class="tab-button" onclick="switchTab('api-config')">🔑 API配置管理</button>
+        <button class="tab-button" onclick="switchTab('comfyui-config')">🎨 ComfyUI设置</button>
+    </div>
+    
+    <!-- 系统参数标签页 -->
+    <div id="system-params" class="tab-content active">
+        <div class="config-section">
+            <h3>⚙️ 系统参数</h3>
+            <div class="config-card">
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="enable-logs" checked>
+                        <span class="checkmark"></span>
+                        启用详细日志
+                    </label>
+                    <small class="help-text">记录详细的操作日志用于调试，日志将保存在根目录的logs文件夹中</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="content-generation-timeout">文案生成超时时间（秒）</label>
+                    <input type="number" id="content-generation-timeout" value="300" min="10" max="600" placeholder="请输入文案生成超时时间">
+                    <small class="help-text">文案生成的最大等待时间，超时后将停止生成</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="format-generation-timeout">格式化生成超时时间（秒）</label>
+                    <input type="number" id="format-generation-timeout" value="120" min="5" max="300" placeholder="请输入格式化生成超时时间">
+                    <small class="help-text">格式化生成的最大等待时间，超时后将停止生成</small>
+                </div>
+                
+                <div class="form-group button-group">
+                    <button type="button" class="btn btn-primary" onclick="saveSystemParams()">💾 保存系统参数</button>
+                    <button type="button" class="btn btn-warning" onclick="resetSystemParams()">🔄 重置默认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- API配置管理标签页 -->
+    <div id="api-config" class="tab-content">
+        <div class="config-section">
+            <h3>🔑 API配置管理</h3>
+            <div class="api-management-container">
+                <!-- 左侧API列表 -->
+                <div class="api-list-panel">
+                    <h4>已保存的API</h4>
+                    <div class="current-active-api" id="current-active-api">
+                        <div class="active-api-label">当前激活:</div>
+                        <div class="active-api-name" id="active-api-name">无</div>
+                    </div>
+                    <div class="api-list" id="api-list">
+                        <!-- API列表将通过JavaScript动态生成 -->
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-small" onclick="refreshApiList()">🔄 刷新列表</button>
+                </div>
+                
+                <!-- 右侧API配置 -->
+                <div class="api-config-panel">
+                    <h4 id="config-panel-title">添加新API</h4>
+                    <div class="config-card">
+                        <input type="hidden" id="current-api-id" value="">
+                        
+                        <div class="form-group">
+                            <label for="api-name">API名称</label>
+                            <input type="text" id="api-name" placeholder="请输入API名称，例如：OpenRouter" value="">
+                            <small class="help-text">为这个API配置起一个便于识别的名称</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="api-url">API接口地址</label>
+                            <input type="text" id="api-url" placeholder="请输入API接口地址，例如：https://api.deepseek.com" value="">
+                            <small class="help-text">AI模型的API接口地址</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="api-key">API KEY</label>
+                            <input type="text" id="api-key" placeholder="请输入API KEY" value="">
+                            <small class="help-text">用于访问AI模型的API密钥</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="model-name">模型名称</label>
+                            <input type="text" id="model-name" placeholder="输入模型名称" value="">
+                            <small class="help-text">当前使用的模型名称</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="available-models">可用模型</label>
+                            <select id="available-models">
+                                <option value="">请先点击"列出模型"</option>
+                            </select>
+                            <button type="button" class="btn btn-secondary btn-small" onclick="selectModel()">选择模型</button>
+                        </div>
+                        
+                        <div class="form-group button-group">
+                            <button type="button" class="btn btn-primary" onclick="listModels()">列出模型</button>
+                            <button type="button" class="btn btn-success" onclick="saveApiConfig()">保存API</button>
+                            <button type="button" class="btn btn-warning" onclick="clearForm()">清空表单</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ComfyUI设置标签页 -->
+    <div id="comfyui-config" class="tab-content">
+        <div class="config-section">
+            <h3>🎨 ComfyUI设置</h3>
+            <div class="config-card">
+                <div class="form-group">
+                    <label for="comfyui-address">ComfyUI地址</label>
+                    <input type="text" id="comfyui-address" value="http://192.168.1.85:8188/" placeholder="请输入ComfyUI服务器地址">
+                    <small class="help-text">ComfyUI图像生成服务器的地址，用于AI图像生成功能</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image-workflow">图像生成工作流</label>
+                    <select id="image-workflow">
+                        <option value="">请选择图像生成工作流</option>
+                    </select>
+                    <small class="help-text">选择用于图像生成的ComfyUI工作流文件</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="audio-workflow">音频生成工作流</label>
+                    <select id="audio-workflow">
+                        <option value="">请选择音频生成工作流</option>
+                    </select>
+                    <small class="help-text">选择用于音频生成的ComfyUI工作流文件</small>
+                </div>
+                
+                <div class="form-group button-group">
+                    <button type="button" class="btn btn-primary" onclick="saveComfyUIConfig()">💾 保存ComfyUI设置</button>
+                    <button type="button" class="btn btn-warning" onclick="resetComfyUIConfig()">🔄 重置默认</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 状态信息 -->
+        <div class="config-status">
+            <h3>📊 系统状态</h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <span class="status-label">运行时间</span>
+                    <span class="status-value" id="uptime-status">⏱️ 加载中...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">系统状态</span>
+                    <span class="status-value" id="system-status">🟢 正常运行</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">最后更新</span>
+                    <span class="status-value" id="last-update">📅 刚刚</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/components.css' %}">
+<script src="{% static 'js/pages/system-config.js' %}"></script>
+{% endblock %}

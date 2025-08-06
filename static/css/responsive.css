@@ -1,0 +1,649 @@
+/* AutoMovie 响应式设计样式文件 */
+/* 适配不同屏幕尺寸的样式规则 */
+
+/* 基础响应式断点 */
+/* 
+  - xs: 0-575px (手机)
+  - sm: 576-767px (大手机/小平板)
+  - md: 768-991px (平板)
+  - lg: 992-1199px (小桌面)
+  - xl: 1200px+ (大桌面)
+*/
+
+/* 大桌面屏幕 (1200px+) */
+@media (min-width: 1200px) {
+    .main-content {
+        padding: 40px;
+    }
+    
+    .image-preview-container {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .upload-preview {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+/* 小桌面屏幕 (992-1199px) */
+@media (max-width: 1199px) and (min-width: 992px) {
+    .sidebar {
+        width: 180px;
+    }
+    
+    .main-content {
+        padding: 30px;
+    }
+    
+    .image-preview-container {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+/* 平板屏幕 (768-991px) */
+@media (max-width: 991px) and (min-width: 768px) {
+    .sidebar {
+        width: 160px;
+    }
+    
+    .sidebar .logo h1 {
+        font-size: 20px;
+    }
+    
+    .menu a {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .main-content {
+        padding: 25px;
+    }
+    
+    .content-header {
+        padding: 15px;
+    }
+    
+    .content-body {
+        padding: 25px;
+    }
+    
+    .image-preview-container {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+    }
+    
+    .audio-player {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .audio-player .progress-container {
+        width: 100%;
+    }
+    
+    .video-controls {
+        padding: 8px 12px;
+        gap: 10px;
+    }
+    
+    .video-controls .time-display {
+        min-width: 70px;
+        font-size: 11px;
+    }
+    
+    .timeline-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    
+    .timeline-controls {
+        justify-content: center;
+    }
+    
+    .track-label {
+        width: 80px;
+        padding: 15px 10px;
+        font-size: 11px;
+    }
+}
+
+/* 大手机/小平板屏幕 (576-767px) */
+@media (max-width: 767px) and (min-width: 576px) {
+    body {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 10px 0;
+    }
+    
+    .sidebar .logo {
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .sidebar .logo h1 {
+        font-size: 18px;
+    }
+    
+    .menu {
+        display: flex;
+        overflow-x: auto;
+        padding: 0 10px;
+    }
+    
+    .menu li {
+        margin: 0 5px;
+        flex-shrink: 0;
+    }
+    
+    .menu a {
+        padding: 10px 15px;
+        font-size: 13px;
+        white-space: nowrap;
+        border-radius: 4px;
+    }
+    
+    .main-content {
+        padding: 20px;
+    }
+    
+    .content-header {
+        padding: 12px;
+    }
+    
+    .content-body {
+        padding: 20px;
+        min-height: 400px;
+    }
+    
+    .image-preview-container {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
+    
+    .image-preview-item img {
+        height: 120px;
+    }
+    
+    .audio-player {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+    }
+    
+    .audio-player .play-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+    
+    .video-controls {
+        padding: 6px 10px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .video-controls .progress-container {
+        order: -1;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .video-controls .time-display {
+        min-width: 60px;
+        font-size: 10px;
+    }
+    
+    .video-controls .volume-container {
+        display: none; /* 在小屏幕上隐藏音量控制 */
+    }
+    
+    .timeline-header {
+        padding: 10px;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .timeline-controls {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .timeline-controls button {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    
+    .track {
+        min-height: 50px;
+    }
+    
+    .track-label {
+        width: 60px;
+        padding: 10px 8px;
+        font-size: 10px;
+    }
+    
+    .timeline-clip {
+        height: 30px;
+        font-size: 10px;
+        padding: 0 8px;
+    }
+    
+    .upload-area {
+        padding: 30px 15px;
+    }
+    
+    .upload-icon {
+        font-size: 36px;
+    }
+    
+    .upload-text p {
+        font-size: 14px;
+    }
+    
+    .upload-hint {
+        font-size: 11px;
+    }
+    
+    .modal-content {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    .modal-title {
+        font-size: 16px;
+    }
+}
+
+/* 手机屏幕 (0-575px) */
+@media (max-width: 575px) {
+    body {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 8px 0;
+    }
+    
+    .sidebar .logo {
+        padding: 10px;
+        margin-bottom: 8px;
+    }
+    
+    .sidebar .logo h1 {
+        font-size: 16px;
+    }
+    
+    .menu {
+        display: flex;
+        overflow-x: auto;
+        padding: 0 8px;
+    }
+    
+    .menu li {
+        margin: 0 3px;
+        flex-shrink: 0;
+    }
+    
+    .menu a {
+        padding: 8px 12px;
+        font-size: 12px;
+        white-space: nowrap;
+        border-radius: 4px;
+    }
+    
+    .main-content {
+        padding: 15px;
+    }
+    
+    .content-header {
+        padding: 10px;
+    }
+    
+    .content-body {
+        padding: 15px;
+        min-height: 300px;
+    }
+    
+    h1 {
+        font-size: 20px;
+    }
+    
+    h2 {
+        font-size: 18px;
+    }
+    
+    h3 {
+        font-size: 16px;
+    }
+    
+    .btn {
+        padding: 8px 15px;
+        font-size: 12px;
+        margin: 3px;
+    }
+    
+    .form-group {
+        margin-bottom: 12px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 6px;
+        font-size: 14px;
+    }
+    
+    .image-preview-container {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 8px;
+    }
+    
+    .image-preview-item img {
+        height: 100px;
+    }
+    
+    .image-preview-item .image-overlay {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .image-preview-item .image-overlay button {
+        padding: 6px 8px;
+        font-size: 10px;
+    }
+    
+    .audio-player {
+        flex-direction: column;
+        gap: 6px;
+        padding: 10px;
+    }
+    
+    .audio-player .play-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+        align-self: center;
+    }
+    
+    .audio-player .time-display {
+        font-size: 10px;
+        text-align: center;
+    }
+    
+    .video-container {
+        padding-bottom: 75%; /* 4:3 宽高比在小屏幕上更合适 */
+    }
+    
+    .video-controls {
+        padding: 5px 8px;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+    
+    .video-controls .progress-container {
+        order: -1;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .video-controls .control-btn {
+        font-size: 14px;
+        padding: 3px;
+    }
+    
+    .video-controls .time-display {
+        min-width: 50px;
+        font-size: 9px;
+    }
+    
+    .video-controls .volume-container,
+    .video-controls .fullscreen-btn {
+        display: none; /* 在手机上隐藏这些控制 */
+    }
+    
+    .timeline-header {
+        padding: 8px;
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .timeline-controls {
+        flex-wrap: wrap;
+        gap: 3px;
+        justify-content: center;
+    }
+    
+    .timeline-controls button {
+        padding: 5px 8px;
+        font-size: 10px;
+    }
+    
+    .timeline-info {
+        text-align: center;
+        font-size: 11px;
+    }
+    
+    .track {
+        min-height: 40px;
+    }
+    
+    .track-label {
+        width: 50px;
+        padding: 8px 5px;
+        font-size: 9px;
+    }
+    
+    .timeline-clip {
+        height: 25px;
+        font-size: 9px;
+        padding: 0 5px;
+        min-width: 40px;
+    }
+    
+    .clip-content {
+        gap: 1px;
+    }
+    
+    .clip-duration {
+        font-size: 8px;
+    }
+    
+    .upload-area {
+        padding: 20px 10px;
+    }
+    
+    .upload-icon {
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
+    
+    .upload-text p {
+        font-size: 12px;
+        margin: 3px 0;
+    }
+    
+    .upload-hint {
+        font-size: 10px;
+    }
+    
+    .upload-preview {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 5px;
+    }
+    
+    .upload-preview-item img {
+        height: 60px;
+    }
+    
+    .upload-preview-item .preview-info {
+        padding: 5px;
+        font-size: 9px;
+    }
+    
+    .lightbox-content {
+        max-width: 95%;
+        max-height: 95%;
+    }
+    
+    .lightbox-close {
+        top: -30px;
+        font-size: 24px;
+        width: 30px;
+        height: 30px;
+    }
+    
+    .modal-content {
+        padding: 15px;
+        width: 98%;
+        margin: 10px;
+    }
+    
+    .modal-title {
+        font-size: 14px;
+    }
+    
+    .modal-close {
+        font-size: 20px;
+    }
+    
+    #status-message {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+}
+
+/* 横屏手机特殊处理 */
+@media (max-width: 767px) and (orientation: landscape) {
+    .sidebar {
+        display: none; /* 横屏时隐藏侧边栏以节省空间 */
+    }
+    
+    .main-content {
+        padding: 10px;
+    }
+    
+    .video-container {
+        padding-bottom: 56.25%; /* 恢复16:9比例 */
+    }
+    
+    .content-body {
+        min-height: 200px;
+    }
+}
+
+/* 打印样式 */
+@media print {
+    .sidebar,
+    .video-controls,
+    .timeline-controls,
+    .image-overlay,
+    .upload-area,
+    #status-message {
+        display: none !important;
+    }
+    
+    .main-content {
+        padding: 0;
+    }
+    
+    .content-header,
+    .content-body {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .image-preview-container {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .video-player {
+        border: 1px solid #ddd;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    .btn {
+        border: 2px solid currentColor;
+    }
+    
+    .image-preview-item,
+    .upload-preview-item,
+    .timeline-clip {
+        border: 2px solid #000;
+    }
+    
+    .progress-bar,
+    .progress-fill {
+        border: 1px solid #000;
+    }
+}
+
+/* 减少动画模式支持 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .loading-spinner {
+        animation: none;
+        border-top-color: transparent;
+    }
+}
+
+/* 暗色主题支持 */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+    
+    .sidebar {
+        background-color: #2d3748;
+    }
+    
+    .content-header,
+    .content-body {
+        background-color: #2d3748;
+        color: #e0e0e0;
+    }
+    
+    .image-preview-item,
+    .upload-preview-item {
+        background-color: #4a5568;
+    }
+    
+    .modal-content {
+        background-color: #2d3748;
+        color: #e0e0e0;
+    }
+    
+    .timeline-header {
+        background-color: #4a5568;
+    }
+    
+    .track-label {
+        background-color: #4a5568;
+    }
+}

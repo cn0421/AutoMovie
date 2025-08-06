@@ -1,0 +1,84 @@
+[MAIN_MODEL]
+active_api = API_1719999999
+
+[SYSTEM_CONFIG]
+enable_logs = true
+
+[PROJECT_CONFIG]
+current_project_path = E:\Code\AutoMovie\projects\20250630_202737
+current_project_name = 20250630_202737
+last_opened_time = 2025-07-01 10:02:42
+
+[BAIDU_CONTENT_CENSOR]
+# 百度云内容审核API配置
+api_key = your_baidu_api_key_here
+secret_key = your_baidu_secret_key_here
+access_token = your_baidu_access_token_here
+access_token_expires = 2025-02-01 00:00:00
+# 是否启用内容审核 (true/false)
+enable_content_censor = true
+# 审核策略ID (可选，从百度云内容审核平台获取)
+strategy_id = 
+# 审核失败时的最大重试次数
+max_retry_count = 3
+
+# 多API配置示例
+# 每个API配置都有一个独立的节，格式为 [API_配置名称]
+[API_OpenRouter]
+name = OpenRouter
+api_url = https://openrouter.ai/api/v1
+api_key = sk-or-v1-your-key-here
+selected_model = deepseek/deepseek-chat:free
+status = active
+created_time = 2025-01-01 12:00:00
+
+[API_DeepSeek]
+name = DeepSeek
+api_url = https://api.deepseek.com
+api_key = sk-your-deepseek-key-here
+selected_model = deepseek-chat
+status = inactive
+created_time = 2025-01-01 12:00:00
+
+[API_OpenAI]
+name = OpenAI
+api_url = https://api.openai.com/v1
+api_key = sk-your-openai-key-here
+selected_model = gpt-4
+status = inactive
+created_time = 2025-01-01 12:00:00
+
+[PROMPT_CONFIG]
+# 默认PROMPT文件路径配置
+# 可以是绝对路径或相对于项目根目录的路径
+default_prompt_file = common/prompt/默认AI短视频策略师.txt
+
+[AUDIO_PAUSE_CONFIG]
+# 音频停顿默认配置
+# 前停顿时长（秒）
+default_pre_pause = 0.25
+# 后停顿时长（秒）
+default_post_pause = 0.25
+
+[VIDEO_FADE_CONFIG]
+# 视频淡入淡出默认配置
+# 淡入帧数
+default_fade_in_frames = 4
+# 淡出帧数
+default_fade_out_frames = 4
+# 默认帧率 (FPS)
+default_video_fps = 25
+
+[VIDEO_BACKGROUND_MUSIC]
+# 背景音乐默认配置
+# 默认背景音乐文件名（放在common/back_mus目录下）
+default_file = Miss You Back.wav
+# 默认音量（百分比，0-100）
+default_volume = 10
+# 默认淡入时长（秒）
+default_fade_in = 2.0
+# 默认淡出时长（秒）
+default_fade_out = 2.0
+# 默认循环模式（loop/once）
+default_loop_mode = loop
+

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}图像生成 - AutoMovie{% endblock %}
+
+{% block page_title %}图像生成{% endblock %}
+{% block page_description %}使用AI生成视频配图{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/image_gen.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="image-generation">
+    <!-- 顶部操作区域 -->
+    <div class="top-actions">
+        <h3>🎨 AI图像生成</h3>
+        <div class="action-buttons">
+            <button id="batch-generate-btn" class="batch-generate-btn">
+                🎨 批量生成所有图像
+            </button>
+            <button id="clear-all-images-btn" class="clear-all-images-btn">
+                🗑️ 清除所有图片
+            </button>
+        </div>
+    </div>
+    
+    <!-- 平铺列表网格 -->
+    <div id="image-grid" class="image-grid-tiles">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            正在加载文案数据...
+        </div>
+    </div>
+    
+    <!-- 图片预览模态框 -->
+    <div id="image-modal" class="image-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <button class="modal-nav prev" id="modal-prev">&lt;</button>
+            <img class="modal-image" id="modal-image" src="" alt="预览图片">
+            <button class="modal-nav next" id="modal-next">&gt;</button>
+            <div class="modal-info" id="modal-info">1 / 8</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/pages/image_gen.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,48 @@
+MIT License
+
+Copyright (c) 2025 cn0421 - AutoMovie
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+THIRD-PARTY COMPONENTS AND MODELS
+
+This software integrates with or may use the following third-party components:
+
+1. ComfyUI (https://github.com/comfyanonymous/ComfyUI)
+   - License: GPL-3.0
+   - Usage: External API integration (not directly embedded)
+
+2. AI Models (Stable Diffusion, etc.)
+   - Various models may be subject to their respective licenses
+   - Users are responsible for ensuring compliance with model-specific licenses
+   - Some models may have commercial use restrictions or attribution requirements
+
+3. Python Dependencies
+   - Django: BSD-3-Clause License
+   - NumPy: BSD License
+   - librosa: ISC License
+   - soundfile: BSD-3-Clause License
+   - pypinyin: MIT License
+
+DISCLAIMER: Users are responsible for ensuring compliance with all applicable 
+licenses when using AI models and third-party services. This software does not 
+include or distribute AI model weights - users must obtain them separately and 
+ensure proper licensing compliance.

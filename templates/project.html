@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}项目管理 - AutoMovie{% endblock %}
+
+{% block page_title %}项目管理{% endblock %}
+{% block page_description %}创建新项目、管理现有项目{% endblock %}
+
+{% block content %}
+<div class="project-management">
+    <!-- 当前项目显示区域 -->
+    <div id="current-project-section" class="current-project-section">
+        <h3 class="current-project-title">📁 当前项目</h3>
+        <div id="current-project-info" class="current-project-info">
+            <div>
+                <div class="current-project-name" id="current-project-name"></div>
+                <div class="current-project-path" id="current-project-path"></div>
+                <div class="current-project-time" id="current-project-time"></div>
+            </div>
+            <button type="button" class="btn close-project-btn" onclick="clearCurrentProject()">
+                ❌ 关闭项目
+            </button>
+        </div>
+    </div>
+    
+    <!-- 创建新项目区域 -->
+    <div class="project-creation-area">
+        <!-- 左侧：创建新项目 -->
+        <div class="create-project-section">
+            <h3>🆕 创建新项目</h3>
+            <form class="create-project-form">
+                <div class="form-group">
+                    <label for="project-name" class="form-label">项目名称：</label>
+                    <input type="text" id="project-name" name="project_name" 
+                           class="form-input"
+                           placeholder="请输入项目名称，如：我的第一个视频">
+                </div>
+                <div class="form-group">
+                    <label for="project-desc" class="form-label">项目描述：</label>
+                    <textarea id="project-desc" name="project_desc" 
+                              class="form-textarea"
+                              placeholder="简单描述一下这个视频项目的内容和目标"></textarea>
+                </div>
+                <button type="submit" class="btn create-project-btn">
+                    ✨ 创建项目
+                </button>
+            </form>
+        </div>
+        
+        <!-- 右侧：打开已有项目 -->
+        <div class="open-project-section">
+            <div class="project-actions">
+                <h3>📂 打开已有项目</h3>
+                <div>
+                    <button type="button" onclick="openSelectedProject()" class="open-project-btn">打开项目</button>
+                    <button type="button" onclick="refreshProjectList()" class="refresh-list-btn">刷新列表</button>
+                </div>
+            </div>
+            <div class="project-list-container">
+                <p style="margin-bottom: 10px;">选择一个现有项目来打开：</p>
+                <div id="project-list" class="project-list">
+                    <div class="loading-message">正在加载项目列表...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 项目统计 -->
+    <div class="project-statistics">
+        <div class="stat-card total">
+            <h4 class="stat-title total">总项目数</h4>
+            <div id="total-projects" class="stat-number total">0</div>
+        </div>
+        <div class="stat-card completed">
+            <h4 class="stat-title completed">已完成</h4>
+            <div id="completed-projects" class="stat-number completed">0</div>
+        </div>
+        <div class="stat-card ongoing">
+            <h4 class="stat-title ongoing">进行中</h4>
+            <div id="ongoing-projects" class="stat-number ongoing">0</div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/pages/project-management.js' %}"></script>
+{% endblock %}

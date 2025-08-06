@@ -1,0 +1,1551 @@
+{% extends 'base.html' %}
+
+{% block title %}自动生成视频 - AutoMovie{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>🎬 自动生成视频</h1>
+        <p class="page-description">一键完成从文案、图片、语音、字幕、背景音乐在到视频的全流程自动化生成</p>
+    </div>
+
+
+
+    <!-- 自动生成控制区 -->
+    <div class="generation-panel">
+        <div class="generation-header">
+            <h3>🚀 自动生成控制</h3>
+            <div class="generation-options">
+                <label class="generation-count-label">
+                    生成次数
+                    <input type="number" id="generation-count" min="1" max="100" value="1" data-config-value="1">
+                    次
+                </label>
+            </div>
+        </div>
+        
+        <div class="generation-button-container">
+            <button id="auto-generate-btn" class="auto-generate-button">
+                <div class="button-icon">🎬</div>
+                <div class="button-text">
+                    <div class="button-title">自动生成视频</div>
+                    <div class="button-subtitle">一键完成全流程</div>
+                </div>
+            </button>
+        </div>
+        
+        <div class="generation-progress" id="generation-progress" style="display: none;">
+            <div class="progress-header">
+                <span class="progress-title">生成进度</span>
+                <span class="progress-percentage">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="step" data-step="project">📁 创建项目</div>
+                <div class="step" data-step="text">📝 生成文案</div>
+                <div class="step" data-step="format">📋 格式化文案</div>
+                <div class="step" data-step="image">🖼️ 图像生成</div>
+                <div class="step" data-step="audio">🎵 音频生成</div>
+                <div class="step" data-step="video">🎬 视频合成</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 实时日志 -->
+    <div class="log-panel">
+        <div class="log-header">
+            <h3>📊 生成日志</h3>
+            <div class="log-controls">
+                <button id="clear-log" class="btn-secondary">清空日志</button>
+                <button id="export-log" class="btn-secondary">导出日志</button>
+            </div>
+        </div>
+        <div class="log-container" id="log-container">
+            <div class="log-entry info">
+                <span class="log-time">[{{ current_time }}]</span>
+                <span class="log-level">[INFO]</span>
+                <span class="log-message">系统已就绪，等待开始自动生成...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 历史记录 -->
+    <div class="history-panel">
+        <div class="history-header">
+            <h3>📚 生成历史</h3>
+            <div class="history-controls">
+                <button id="refresh-history" class="btn-secondary">刷新</button>
+                <button id="clear-history" class="btn-secondary">清空历史</button>
+            </div>
+        </div>
+        <div class="history-container" id="history-container">
+            <div class="history-empty">
+                <div class="empty-icon">📁</div>
+                <div class="empty-text">暂无生成历史</div>
+                <div class="empty-subtitle">完成第一次自动生成后，历史记录将显示在这里</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 视频播放器模态框 -->
+<div id="video-modal" class="video-modal">
+    <div class="video-modal-content">
+        <div class="video-modal-header">
+            <div class="video-modal-title" id="video-modal-title">视频播放</div>
+            <button class="video-modal-close" id="video-modal-close">&times;</button>
+        </div>
+        <div class="video-modal-body">
+            <video id="video-player" controls>
+                您的浏览器不支持视频播放。
+            </video>
+        </div>
+    </div>
+</div>
+
+<style>
+
+
+.generation-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.generation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.generation-options {
+    display: flex;
+    gap: 16px;
+}
+
+.generation-options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.generation-count-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.generation-count-label input[type="number"] {
+    width: 70px;
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.generation-button-container {
+    display: flex;
+    justify-content: center;
+    margin: 32px 0;
+}
+
+.auto-generate-button {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 40px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0,123,255,0.3);
+}
+
+.auto-generate-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+}
+
+.auto-generate-button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.button-icon {
+    font-size: 32px;
+}
+
+.button-text {
+    text-align: left;
+}
+
+.button-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.button-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.generation-progress {
+    margin-top: 24px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.progress-title {
+    font-weight: bold;
+}
+
+.progress-percentage {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #007bff, #28a745);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.step {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    background: white;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #666;
+    border: 2px solid #e9ecef;
+}
+
+.step.active {
+    border-color: #007bff;
+    color: #007bff;
+    background: #e3f2fd;
+}
+
+.step.completed {
+    border-color: #28a745;
+    color: #28a745;
+    background: #d4edda;
+}
+
+.step.error {
+    border-color: #dc3545;
+    color: #dc3545;
+    background: #f8d7da;
+}
+
+.log-panel, .history-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.log-header, .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.log-controls, .history-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.log-container {
+    background: #000;
+    color: #00ff00;
+    padding: 16px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    height: 300px;
+    overflow-y: auto;
+}
+
+.log-entry {
+    margin-bottom: 4px;
+    word-wrap: break-word;
+}
+
+.log-entry.info { color: #00ff00; }
+.log-entry.warning { color: #ffff00; }
+.log-entry.error { color: #ff4444; }
+.log-entry.success { color: #00ffff; }
+
+.log-time {
+    color: #888;
+}
+
+.log-level {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.history-container {
+    min-height: 200px;
+}
+
+.history-empty {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-text {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.empty-subtitle {
+    font-size: 14px;
+}
+
+.btn-secondary {
+    padding: 8px 16px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+/* 历史面板样式 */
+.history-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.history-item:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.history-item-icon {
+    font-size: 24px;
+    margin-right: 12px;
+    color: #007bff;
+}
+
+.history-item-content {
+    flex: 1;
+}
+
+.history-item-title {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.history-item-info {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #666;
+}
+
+.history-item-time {
+    color: #007bff;
+}
+
+.history-item-size {
+    color: #28a745;
+}
+
+.history-item-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.history-action-btn {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.history-play-btn {
+    background: #007bff;
+    color: white;
+}
+
+.history-play-btn:hover {
+    background: #0056b3;
+}
+
+.history-delete-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.history-delete-btn:hover {
+    background: #c82333;
+}
+
+.history-loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.history-loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 视频播放器模态框 */
+.video-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.video-modal-content {
+    position: relative;
+    margin: 1% auto;
+    width: 95%;
+    max-width: 1400px;
+    max-height: 95vh;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-modal-header {
+    padding: 12px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.video-modal-title {
+    font-weight: bold;
+    color: #333;
+}
+
+.video-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-modal-close:hover {
+    color: #333;
+}
+
+.video-modal-body {
+    padding: 10px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.video-modal video {
+    max-width: calc(100% - 20px);
+    max-height: calc(95vh - 80px);
+    height: auto;
+    width: auto;
+    display: block;
+    object-fit: contain;
+}
+</style>
+
+<script>
+// 页面初始化
+document.addEventListener('DOMContentLoaded', function() {
+    checkProjectStatus();
+    loadGenerationHistory();
+    loadGenerationCountSettings();
+    
+    // 初始化Django日志系统
+    initializeDjangoLogSystem();
+    
+    // 绑定事件
+    document.getElementById('auto-generate-btn').addEventListener('click', startAutoGeneration);
+    document.getElementById('clear-log').addEventListener('click', clearLog);
+    document.getElementById('export-log').addEventListener('click', exportLog);
+    document.getElementById('refresh-history').addEventListener('click', loadGenerationHistory);
+    document.getElementById('clear-history').addEventListener('click', clearHistory);
+    
+    // 连续生成相关事件
+    document.getElementById('generation-count').addEventListener('change', saveGenerationCountSettings);
+});
+
+// Django日志系统相关变量
+let logUpdateInterval = null;
+let lastLogTimestamp = 0;
+
+// 初始化Django日志系统
+function initializeDjangoLogSystem() {
+    addCustomLog('info', 'Django日志系统已初始化');
+    
+    // 开始定期获取日志
+    startLogPolling();
+}
+
+// 开始日志轮询
+function startLogPolling() {
+    // 立即获取一次日志
+    fetchDjangoLogs();
+    
+    // 每2秒获取一次新日志
+    logUpdateInterval = setInterval(fetchDjangoLogs, 2000);
+}
+
+// 停止日志轮询
+function stopLogPolling() {
+    if (logUpdateInterval) {
+        clearInterval(logUpdateInterval);
+        logUpdateInterval = null;
+    }
+}
+
+// 获取Django日志
+function fetchDjangoLogs() {
+    const url = lastLogTimestamp > 0 
+        ? `/get_django_logs/?since=${lastLogTimestamp}&max_logs=20`
+        : '/get_django_logs/?max_logs=50';
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.logs && data.logs.length > 0) {
+                // 显示新日志
+                data.logs.forEach(log => {
+                    displayLogEntry(log);
+                });
+                
+                // 更新时间戳
+                lastLogTimestamp = data.timestamp;
+            }
+        })
+        .catch(error => {
+            console.error('获取Django日志失败:', error);
+        });
+}
+
+// 显示日志条目
+function displayLogEntry(log) {
+    const container = document.getElementById('log-container');
+    
+    // 映射日志级别到CSS类
+    const levelMap = {
+        'INFO': 'info',
+        'WARNING': 'warning',
+        'ERROR': 'error',
+        'SUCCESS': 'success',
+        'DEBUG': 'info'
+    };
+    
+    const cssClass = levelMap[log.level] || 'info';
+    
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${cssClass}`;
+    entry.innerHTML = `
+        <span class="log-time">[${log.timestamp}]</span>
+        <span class="log-level">[${log.level}]</span>
+        <span class="log-message">${log.message}</span>
+    `;
+    
+    container.appendChild(entry);
+    container.scrollTop = container.scrollHeight;
+    
+    // 限制日志条目数量，避免内存占用过多
+    const maxEntries = 200;
+    while (container.children.length > maxEntries) {
+        container.removeChild(container.firstChild);
+    }
+}
+
+// 添加自定义日志
+function addCustomLog(level, message, module = 'AutoVideo') {
+    const data = {
+        level: level.toUpperCase(),
+        message: message,
+        module: module
+    };
+    
+    fetch('/add_custom_log/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.error('添加日志失败:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('添加日志时发生错误:', error);
+    });
+}
+
+// 兼容性函数 - 保持原有的addLog函数接口
+function addLog(level, message) {
+    addCustomLog(level, message);
+}
+
+// 检查项目状态
+function checkProjectStatus() {
+    addLog('info', '开始检查项目状态...');
+    
+    // 检查当前项目
+    fetch('/get_current_project/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.project) {
+                updateStatusItem('project', 'ready', data.project.project_name, '✅');
+                checkProjectAssets(data.project.project_path);
+            } else {
+                updateStatusItem('project', 'error', '未选择项目', '❌');
+                addLog('error', '未找到当前项目，请先在项目管理页面创建或选择项目');
+            }
+        })
+        .catch(error => {
+            updateStatusItem('project', 'error', '检查失败', '❌');
+            addLog('error', '检查项目状态失败: ' + error.message);
+        });
+}
+
+// 检查项目素材
+function checkProjectAssets(projectPath) {
+    // 检查文案
+    fetch(`/load_paper_json/?project_path=${encodeURIComponent(projectPath)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.script && data.script.length > 0) {
+                updateStatusItem('text', 'ready', `${data.script.length} 段文案`, '✅');
+            } else {
+                updateStatusItem('text', 'warning', '无文案', '⚠️');
+            }
+        })
+        .catch(() => {
+            updateStatusItem('text', 'error', '检查失败', '❌');
+        });
+    
+    // 检查图像和音频 - 这里需要实现相应的API
+    // 暂时模拟检查
+    setTimeout(() => {
+        updateStatusItem('image', 'warning', '0 张图像', '⚠️');
+        updateStatusItem('audio', 'warning', '0 个音频', '⚠️');
+        
+        // 检查完成后启用按钮
+        checkGenerationReadiness();
+    }, 1000);
+}
+
+// 更新状态项
+function updateStatusItem(type, status, value, indicator) {
+    const item = document.getElementById(`${type}-status`);
+    const valueEl = document.getElementById(`${type}-count`);
+    const indicatorEl = document.getElementById(`${type}-indicator`);
+    
+    if (item && valueEl && indicatorEl) {
+        item.className = `status-item ${status}`;
+        valueEl.textContent = value;
+        indicatorEl.textContent = indicator;
+    }
+}
+
+// 检查是否可以开始生成
+function checkGenerationReadiness() {
+    const projectIndicator = document.getElementById('project-indicator');
+    const textIndicator = document.getElementById('text-indicator');
+    const button = document.getElementById('auto-generate-btn');
+    
+    if (button) {
+        // 自动生成视频按钮始终可用，因为它是完整的从零开始流程
+        button.disabled = false;
+        addLog('success', '自动生成视频功能已就绪，可以一键完成全流程');
+        
+        // 显示当前项目状态信息
+        if (projectIndicator && textIndicator) {
+            const projectReady = projectIndicator.textContent === '✅';
+            const textReady = textIndicator.textContent === '✅';
+            
+            if (projectReady && textReady) {
+                addLog('info', '检测到现有项目和文案，自动生成将在此基础上继续');
+            } else {
+                addLog('info', '将创建新项目并生成完整内容');
+            }
+        }
+    }
+}
+
+// 开始自动生成
+function startAutoGeneration() {
+    const button = document.getElementById('auto-generate-btn');
+    const progress = document.getElementById('generation-progress');
+    const generationCountInput = document.getElementById('generation-count');
+    
+    // 安全检查，避免null值错误
+    const generationCount = generationCountInput ? parseInt(generationCountInput.value) || 1 : 1;
+    
+    if (button) button.disabled = true;
+    if (progress) progress.style.display = 'block';
+    
+    if (generationCount > 1) {
+        addLog('info', `开始连续自动生成视频流程，共 ${generationCount} 次...`);
+        startContinuousGeneration(generationCount, 1);
+    } else {
+        addLog('info', '开始自动生成视频流程...');
+        simulateGeneration(1, 1);
+    }
+}
+
+// 连续生成控制函数
+function startContinuousGeneration(totalCount, currentRound) {
+    addLog('info', `开始第 ${currentRound}/${totalCount} 轮生成...`);
+    simulateGeneration(currentRound, totalCount);
+}
+
+// 真正的自动生成视频流程
+async function simulateGeneration(currentRound = 1, totalRounds = 1) {
+    const steps = [
+        { key: 'project', name: '创建项目', api: 'create_project' },
+        { key: 'text', name: '生成文案', api: 'generate_text' },
+        { key: 'format', name: '格式化文案', api: 'format_text' },
+        { key: 'image', name: '批量生成图像', api: 'batch_generate_images' },
+        { key: 'audio', name: '批量生成音频', api: 'batch_generate_audios' },
+        { key: 'video', name: '生成视频', api: 'generate_video' }
+    ];
+    
+    let currentStep = 0;
+    let projectPath = null;
+    
+    async function nextStep() {
+        if (currentStep < steps.length) {
+            const step = steps[currentStep];
+            updateProgressStep(step.key, 'active');
+            addCustomLog('info', `[第${currentRound}轮] 正在执行: ${step.name}`);
+            
+            try {
+                // 执行对应的API调用
+                const result = await executeStep(step, projectPath, currentRound);
+                
+                if (result.success) {
+                    // 如果是创建项目步骤，保存项目路径
+                    if (step.key === 'project' && result.project_path) {
+                        projectPath = result.project_path;
+                        addCustomLog('success', `项目创建成功: ${result.project_path}`);
+                    } else {
+                        addCustomLog('success', `${step.name}完成: ${result.message || '操作成功'}`);
+                    }
+                    
+                    updateProgressStep(step.key, 'completed');
+                    updateProgress((currentStep + 1) / steps.length * 100);
+                    currentStep++;
+                    
+                    // 短暂延迟后继续下一步
+                    setTimeout(nextStep, 500);
+                } else {
+                    throw new Error(result.error || `${step.name}失败`);
+                }
+            } catch (error) {
+                addCustomLog('error', `[第${currentRound}轮] ${step.name}失败: ${error.message}`);
+                updateProgressStep(step.key, 'error');
+                
+                // 失败时停止当前轮次
+                document.getElementById('auto-generate-btn').disabled = false;
+                document.getElementById('generation-progress').style.display = 'none';
+                return;
+            }
+        } else {
+            addCustomLog('success', `第 ${currentRound}/${totalRounds} 轮生成完成！`);
+            
+            // 检查是否需要继续下一轮
+            if (currentRound < totalRounds) {
+                // 重置进度条
+                setTimeout(() => {
+                    resetProgress();
+                    startContinuousGeneration(totalRounds, currentRound + 1);
+                }, 1000);
+            } else {
+                // 所有轮次完成
+                addCustomLog('success', `所有 ${totalRounds} 轮自动生成完成！`);
+                document.getElementById('auto-generate-btn').disabled = false;
+                document.getElementById('generation-progress').style.display = 'none';
+                loadGenerationHistory();
+            }
+        }
+    }
+    
+    nextStep();
+}
+
+// 执行具体的步骤
+async function executeStep(step, projectPath, currentRound) {
+    switch (step.key) {
+        case 'project':
+            return await createProject(currentRound);
+        case 'text':
+            return await generateText(projectPath);
+        case 'format':
+            return await formatText(projectPath);
+        case 'image':
+            return await batchGenerateImages(projectPath);
+        case 'audio':
+            return await batchGenerateAudios(projectPath);
+        case 'video':
+            return await generateVideo(projectPath);
+        default:
+            throw new Error(`未知步骤: ${step.key}`);
+    }
+}
+
+// 创建项目
+async function createProject(roundNumber) {
+    // 使用简单的命名规则：A + 时间戳
+    const timestamp = new Date().toISOString().slice(0,19).replace(/[-:T]/g, '').slice(0,12);
+    const projectName = `A${timestamp}`;
+    const projectDesc = `自动生成的视频项目 - 第${roundNumber}轮`;
+    
+    const response = await fetch('/create_project/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            project_name: projectName,
+            project_desc: projectDesc
+        })
+    });
+    
+    return await response.json();
+}
+
+// 生成文案
+async function generateText(projectPath) {
+    // 获取config.ini中PROMPT_CONFIG指向的文案生成提示词
+    const promptResponse = await fetch('/load_default_prompt/');
+    const promptData = await promptResponse.json();
+    
+    if (!promptData.success) {
+        throw new Error('无法加载默认提示词');
+    }
+    
+    const response = await fetch('/generate_text/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            prompt: promptData.content || '请生成一个有趣的短视频文案'
+        })
+    });
+    
+    return await response.json();
+}
+
+// 格式化文案
+async function formatText(projectPath) {
+    try {
+        // 从config.ini读取活动格式化提示词文件内容
+        const formatPromptResponse = await fetch('/load_active_format_prompt_content/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const formatPromptData = await formatPromptResponse.json();
+        if (!formatPromptData.success) {
+            throw new Error(`获取格式化提示词失败: ${formatPromptData.error}`);
+        }
+        
+        // 使用获取到的格式化提示词调用format_text接口
+        const response = await fetch('/format_text/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                prompt: formatPromptData.content,
+                project_path: projectPath
+            })
+        });
+        
+        return await response.json();
+    } catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+// 批量生成图像
+async function batchGenerateImages(projectPath) {
+    try {
+        // 首先从parameter.ini获取sentence_count
+        const paramResponse = await fetch(`/load_parameter_config/?project_path=${encodeURIComponent(projectPath)}`);
+        const paramData = await paramResponse.json();
+        
+        let sentenceCount = 8; // 默认值
+        if (paramData.success && paramData.sentence_count !== undefined) {
+            sentenceCount = parseInt(paramData.sentence_count);
+        }
+        
+        addCustomLog('info', `开始批量生成 ${sentenceCount} 张图像...`);
+        
+        // 根据sentenceCount生成图像，而不是依赖paper.json
+        for (let i = 1; i <= sentenceCount; i++) {
+            addCustomLog('info', `正在生成第 ${i}/${sentenceCount} 张图像...`);
+            
+            try {
+                const response = await fetch('/generate_image/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    body: JSON.stringify({
+                        script_id: i,
+                        project_path: projectPath
+                    })
+                });
+                
+                const result = await response.json();
+                if (!result.success) {
+                    // 如果是第一个图片生成失败，检查是否是paper.json相关错误
+                    if (i === 1) {
+                        const errorMessage = result.error || result.message || '';
+                        if (errorMessage.includes('paper.json') || 
+                            errorMessage.includes('无法加载paper.json数据') ||
+                            errorMessage.includes('项目文案未格式化')) {
+                            
+                            throw new Error('项目文案未格式化，请先到文案生成页面完成文案格式化');
+                        }
+                    }
+                    
+                    // 其他错误记录但不中断批量生成
+                    addCustomLog('warning', `第 ${i} 张图像生成失败: ${result.error || result.message}`);
+                } else {
+                    addCustomLog('info', `第 ${i} 张图像生成成功`);
+                }
+            } catch (error) {
+                // 如果是第一个图片的paper.json错误，重新抛出
+                if (i === 1 && error.message.includes('项目文案未格式化')) {
+                    throw error;
+                }
+                
+                // 其他错误记录但不中断批量生成
+                addCustomLog('warning', `第 ${i} 张图像生成出错: ${error.message}`);
+            }
+            
+            // 添加延迟避免请求过快
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        return {
+            success: true,
+            message: `批量生成完成，共处理 ${sentenceCount} 张图像`
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+// 批量生成音频
+async function batchGenerateAudios(projectPath) {
+    try {
+        // 首先从parameter.ini获取sentence_count
+        const paramResponse = await fetch(`/load_parameter_config/?project_path=${encodeURIComponent(projectPath)}`);
+        const paramData = await paramResponse.json();
+        
+        let sentenceCount = 8; // 默认值
+        if (paramData.success && paramData.sentence_count !== undefined) {
+            sentenceCount = parseInt(paramData.sentence_count);
+        }
+        
+        addCustomLog('info', `开始批量生成 ${sentenceCount} 个音频...`);
+        
+        // 根据sentenceCount生成音频，而不是依赖paper.json
+        for (let i = 1; i <= sentenceCount; i++) {
+            addCustomLog('info', `正在生成第 ${i}/${sentenceCount} 个音频...`);
+            
+            try {
+                // 从parameter.ini获取对应的文案内容
+                let text = '';
+                if (paramData.success && paramData.paper_content) {
+                    const lineKey = `line_${i}`;
+                    text = paramData.paper_content[lineKey] || '';
+                }
+                
+                const response = await fetch('/generate_audio/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    body: JSON.stringify({
+                        script_id: i,
+                        project_path: projectPath,
+                        text: text
+                    })
+                });
+                
+                const result = await response.json();
+                if (!result.success) {
+                    // 其他错误记录但不中断批量生成
+                    addCustomLog('warning', `第 ${i} 个音频生成失败: ${result.error || result.message}`);
+                } else {
+                    addCustomLog('info', `第 ${i} 个音频生成成功`);
+                }
+            } catch (error) {
+                // 错误记录但不中断批量生成
+                addCustomLog('warning', `第 ${i} 个音频生成出错: ${error.message}`);
+            }
+            
+            // 添加延迟避免请求过快
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        return {
+            success: true,
+            message: `批量生成完成，共处理 ${sentenceCount} 个音频`
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+// 生成视频
+async function generateVideo(projectPath) {
+    const response = await fetch('/generate_video/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            project_path: projectPath,
+            resolution: { width: 1080, height: 1920 },
+            quality: { preset: 'medium' },
+            filename: `auto_generated_video_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.mp4`
+        })
+    });
+    
+    return await response.json();
+}
+
+// 重置进度条
+function resetProgress() {
+    const steps = document.querySelectorAll('.step');
+    steps.forEach(step => {
+        step.className = 'step';
+    });
+    updateProgress(0);
+}
+
+// 更新进度步骤
+function updateProgressStep(step, status) {
+    const stepEl = document.querySelector(`[data-step="${step}"]`);
+    stepEl.className = `step ${status}`;
+}
+
+// 更新进度条
+function updateProgress(percentage) {
+    const fill = document.querySelector('.progress-fill');
+    const text = document.querySelector('.progress-percentage');
+    
+    fill.style.width = percentage + '%';
+    text.textContent = Math.round(percentage) + '%';
+}
+
+// 获取步骤名称
+function getStepName(step) {
+    const names = {
+        'text': '文案生成',
+        'image': '图像生成', 
+        'audio': '音频生成',
+        'video': '视频合成'
+    };
+    return names[step] || step;
+}
+
+// 添加日志
+function addLog(level, message) {
+    const container = document.getElementById('log-container');
+    const time = new Date().toLocaleTimeString();
+    
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${level}`;
+    entry.innerHTML = `
+        <span class="log-time">[${time}]</span>
+        <span class="log-level">[${level.toUpperCase()}]</span>
+        <span class="log-message">${message}</span>
+    `;
+    
+    container.appendChild(entry);
+    container.scrollTop = container.scrollHeight;
+}
+
+// 清空日志
+function clearLog() {
+    const container = document.getElementById('log-container');
+    container.innerHTML = '';
+    
+    // 重置时间戳，重新获取日志
+    lastLogTimestamp = 0;
+    
+    addCustomLog('info', '日志显示已清空');
+}
+
+// 导出日志
+function exportLog() {
+    // 获取当前显示的所有日志
+    const container = document.getElementById('log-container');
+    const logEntries = container.querySelectorAll('.log-entry');
+    
+    let logText = '=== AutoMovie Django日志导出 ===\n';
+    logText += `导出时间: ${new Date().toLocaleString()}\n`;
+    logText += `总计日志条目: ${logEntries.length}\n\n`;
+    
+    logEntries.forEach(entry => {
+        const time = entry.querySelector('.log-time').textContent;
+        const level = entry.querySelector('.log-level').textContent;
+        const message = entry.querySelector('.log-message').textContent;
+        logText += `${time} ${level} ${message}\n`;
+    });
+    
+    // 创建并下载文件
+    const blob = new Blob([logText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `django-log-${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    URL.revokeObjectURL(url);
+    addCustomLog('info', 'Django日志已导出到文件');
+}
+
+// 加载生成历史
+function loadGenerationHistory() {
+    const container = document.getElementById('history-container');
+    
+    // 显示加载状态
+    container.innerHTML = `
+        <div class="history-loading">
+            <div class="history-loading-spinner"></div>
+            正在加载生成历史...
+        </div>
+    `;
+    
+    addLog('info', '正在加载生成历史...');
+    
+    fetch('/get_video_history/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayVideoHistory(data.videos, data.count);
+                addLog('info', `成功加载 ${data.count} 个历史视频`);
+            } else {
+                container.innerHTML = `
+                    <div class="history-empty">
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-text">加载失败</div>
+                        <div class="empty-subtitle">${data.error || '未知错误'}</div>
+                    </div>
+                `;
+                addLog('error', '加载生成历史失败: ' + (data.error || '未知错误'));
+            }
+        })
+        .catch(error => {
+            container.innerHTML = `
+                <div class="history-empty">
+                    <div class="empty-icon">❌</div>
+                    <div class="empty-text">网络错误</div>
+                    <div class="empty-subtitle">请检查网络连接后重试</div>
+                </div>
+            `;
+            addLog('error', '加载生成历史时发生错误: ' + error.message);
+        });
+}
+
+// 显示视频历史
+function displayVideoHistory(videos, count) {
+    const container = document.getElementById('history-container');
+    
+    if (!videos || videos.length === 0) {
+        container.innerHTML = `
+            <div class="history-empty">
+                <div class="empty-icon">📁</div>
+                <div class="empty-text">暂无生成历史</div>
+                <div class="empty-subtitle">完成第一次自动生成后，历史记录将显示在这里</div>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    videos.forEach(video => {
+        html += `
+            <div class="history-item" data-video-path="${video.file_path}">
+                <div class="history-item-icon">🎬</div>
+                <div class="history-item-content">
+                    <div class="history-item-title">${video.project_name}</div>
+                    <div class="history-item-info">
+                        <span class="history-item-time">📅 ${video.formatted_time}</span>
+                        <span class="history-item-size">💾 ${video.formatted_size}</span>
+                        <span class="history-item-path">📁 ${video.relative_path}</span>
+                    </div>
+                </div>
+                <div class="history-item-actions">
+                    <button class="history-action-btn history-play-btn" onclick="playVideo('${video.relative_path}', '${video.project_name}')">
+                        ▶️ 播放
+                    </button>
+                    <button class="history-action-btn history-delete-btn" onclick="deleteVideo('${video.file_path}', '${video.project_name}')">
+                        🗑️ 删除
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// 播放视频
+function playVideo(relativePath, projectName) {
+    const modal = document.getElementById('video-modal');
+    const player = document.getElementById('video-player');
+    const title = document.getElementById('video-modal-title');
+    
+    // 直接使用传入的相对路径构造媒体URL
+    const mediaUrl = `/media/${relativePath}`;
+    
+    // 设置视频源和标题
+    player.src = mediaUrl;
+    title.textContent = `播放视频 - ${projectName}`;
+    
+    // 显示模态框
+    modal.style.display = 'block';
+    
+    // 播放视频
+    player.load();
+    player.play().catch(error => {
+        addLog('error', '视频播放失败: ' + error.message);
+        console.error('视频播放错误详情:', error);
+        console.log('尝试播放的视频URL:', mediaUrl);
+        console.log('相对路径:', relativePath);
+    });
+    
+    addLog('info', `开始播放视频: ${projectName}`);
+    console.log('视频URL:', mediaUrl);
+}
+
+// 删除视频
+function deleteVideo(filePath, projectName) {
+    if (!confirm(`确定要删除视频 "${projectName}" 吗？\n\n文件路径: ${filePath}\n\n此操作不可撤销！`)) {
+        return;
+    }
+    
+    addLog('info', `正在删除视频: ${projectName}`);
+    
+    fetch('/delete_video/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            file_path: filePath
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            addLog('success', `视频删除成功: ${projectName}`);
+            // 重新加载历史记录
+            loadGenerationHistory();
+        } else {
+            addLog('error', `删除视频失败: ${data.error || '未知错误'}`);
+        }
+    })
+    .catch(error => {
+        addLog('error', `删除视频时发生错误: ${error.message}`);
+    });
+}
+
+// 清空历史
+function clearHistory() {
+    if (!confirm('确定要清空所有生成历史吗？\n\n这将删除 projects 目录下的所有 MP4 文件！\n\n此操作不可撤销！')) {
+        return;
+    }
+    
+    addLog('info', '正在清空生成历史...');
+    
+    fetch('/clear_video_history/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            addLog('success', `成功清空历史记录，删除了 ${data.deleted_count} 个视频文件`);
+            // 重新加载历史记录
+            loadGenerationHistory();
+        } else {
+            addLog('error', `清空历史记录失败: ${data.error || '未知错误'}`);
+        }
+    })
+    .catch(error => {
+        addLog('error', `清空历史记录时发生错误: ${error.message}`);
+    });
+}
+
+// 初始化视频模态框事件
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('video-modal');
+    const closeBtn = document.getElementById('video-modal-close');
+    const player = document.getElementById('video-player');
+    
+    // 关闭模态框
+    closeBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+        player.pause();
+        player.src = '';
+    });
+    
+    // 点击模态框外部关闭
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            player.pause();
+            player.src = '';
+        }
+    });
+    
+    // ESC键关闭模态框
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+            player.pause();
+            player.src = '';
+        }
+    });
+});
+
+// 生成次数设置相关函数
+function saveGenerationCountSettings() {
+    const countInput = document.getElementById('generation-count');
+    
+    if (!countInput) {
+        addLog('warning', '生成次数输入框未找到，无法保存设置');
+        return;
+    }
+    
+    // 检查是否正在加载设置，避免在加载期间保存
+    if (countInput.hasAttribute('data-loading')) {
+        return;
+    }
+    
+    let count = parseInt(countInput.value);
+    
+    // 验证输入值
+    if (isNaN(count) || count < 1 || count > 100) {
+        // 如果输入无效，恢复到配置文件中的值
+        const configValue = countInput.getAttribute('data-config-value');
+        if (configValue) {
+            count = parseInt(configValue);
+            countInput.value = count;
+        } else {
+            count = 1; // 默认值
+            countInput.value = count;
+        }
+        addLog('warning', `输入值无效，已恢复为 ${count}`);
+    }
+    
+    const data = {
+        generation_count: count
+    };
+    
+    fetch('/save_continuous_generation_settings/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            addLog('info', `生成次数设置已保存到配置文件: ${count} 次`);
+            // 更新数据属性
+            countInput.setAttribute('data-config-value', count);
+        } else {
+            addLog('error', '保存生成次数设置失败: ' + data.error);
+        }
+    })
+    .catch(error => {
+        addLog('error', '保存生成次数设置时发生错误: ' + error.message);
+    });
+}
+
+function loadGenerationCountSettings() {
+    const countInput = document.getElementById('generation-count');
+    
+    if (!countInput) {
+        addLog('warning', '生成次数输入框未找到，无法加载设置');
+        return;
+    }
+    
+    // 设置加载标记，防止在加载期间触发保存
+    countInput.setAttribute('data-loading', 'true');
+    
+    fetch('/load_continuous_generation_settings/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 设置生成次数，确保使用从config.ini读取的值
+                const configCount = data.generation_count || 1;
+                countInput.value = configCount;
+                
+                // 防止其他代码覆盖这个值，添加数据属性标记
+                countInput.setAttribute('data-config-value', configCount);
+                
+                if (configCount > 1) {
+                    addLog('info', `已加载生成次数设置：${configCount} 次（连续生成模式）`);
+                } else {
+                    addLog('info', `已加载生成次数设置：${configCount} 次（单次生成模式）`);
+                }
+            } else {
+                addLog('warning', '加载生成次数设置失败，使用默认值: ' + (data.error || '未知错误'));
+            }
+        })
+        .catch(error => {
+            addLog('warning', '加载生成次数设置失败，使用默认值: ' + error.message);
+        })
+        .finally(() => {
+            // 移除加载标记
+            countInput.removeAttribute('data-loading');
+        });
+}
+
+// 获取CSRF Token
+function getCsrfToken() {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'csrftoken') {
+            return value;
+        }
+    }
+    return '';
+}
+</script>
+{% endblock %}

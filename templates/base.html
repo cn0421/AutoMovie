@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AutoMovie - 视频生成器{% endblock %}</title>
+    
+    <!-- 引入静态CSS文件 -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=2.3">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- 左侧菜单栏 -->
+    <div class="sidebar">
+        <div class="logo">
+            <h1>AutoMovie</h1>
+            <p>视频生成器</p>
+        </div>
+        
+        <ul class="menu">
+            <li><a href="{% url 'index' %}" {% if request.resolver_match.url_name == 'index' %}class="active"{% endif %}>首页</a></li>
+            <li><a href="{% url 'project_management' %}" {% if request.resolver_match.url_name == 'project_management' %}class="active"{% endif %}>项目管理</a></li>
+            <li><a href="{% url 'text_generation' %}" {% if request.resolver_match.url_name == 'text_generation' %}class="active"{% endif %}>文案生成</a></li>
+            <li><a href="{% url 'image_generation' %}" {% if request.resolver_match.url_name == 'image_generation' %}class="active"{% endif %}>图像生成</a></li>
+            <li><a href="{% url 'audio_generation' %}" {% if request.resolver_match.url_name == 'audio_generation' %}class="active"{% endif %}>语音生成</a></li>
+            <li><a href="{% url 'video_maker' %}" {% if request.resolver_match.url_name == 'video_maker' %}class="active"{% endif %}>视频拼接</a></li>
+            <li><a href="{% url 'auto_video' %}" {% if request.resolver_match.url_name == 'auto_video' %}class="active"{% endif %}>自动生成视频</a></li>
+            <li><a href="{% url 'system_config' %}" {% if request.resolver_match.url_name == 'system_config' %}class="active"{% endif %}>系统设置</a></li>
+
+        </ul>
+    </div>
+    
+    <!-- 右侧内容区 -->
+    <div class="main-content">
+        <div class="content-body">
+            {% block content %}
+            <div class="alert alert-info">
+                <strong>提示：</strong> 请从左侧菜单选择功能模块开始使用。
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+    
+    <!-- 引入静态JavaScript文件 -->
+    <script src="{% static 'js/common.js' %}"></script>
+    <script src="{% static 'js/modules/audio.js' %}"></script>
+    <script src="{% static 'js/modules/image.js' %}"></script>
+    <script src="{% static 'js/modules/video.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}文案生成 - AutoMovie{% endblock %}
+
+{% block page_title %}文案生成{% endblock %}
+{% block page_description %}使用AI生成视频文案{% endblock %}
+
+{% block content %}
+<div class="theme-lock-container"
+    style="display: flex; align-items: center; padding: 15px; margin: 0 auto 20px auto; background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 800px;">
+    <input type="text" id="theme-input" placeholder="请输入您想锁定的主题">
+    <button id="lock-theme-btn">锁定主题</button>
+</div>
+
+<div class="text-generation-wrapper">
+    <h3>📝 文案生成</h3>
+    <div class="text-generation-grid">
+    <!-- 左侧：PROMPT选择区域 -->
+    <div class="prompt-sidebar">
+
+        <!-- PROMPT文件列表 -->
+        <div class="prompt-list-container">
+            <div class="prompt-list-wrapper">
+                <div id="prompt-list" class="prompt-list">
+                    <!-- PROMPT文件列表将在这里动态加载 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 提示信息 -->
+        <div class="prompt-hint">
+            <small>💡 双击文件名可将内容加载到右侧编辑框</small>
+        </div>
+    </div>
+
+    <!-- 中间：PROMPT输入区域 -->
+    <div class="prompt-input-section">
+
+        <div class="prompt-input-container">
+            <div class="form-group">
+                <label for="prompt-input" class="form-label">PROMPT：</label>
+                <textarea id="prompt-input" class="form-control prompt-textarea"
+                    placeholder="请输入生成文案的提示词，或从左侧选择模板..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button id="generate-btn" class="btn btn-success">
+                    ✨ 生成文案
+                </button>
+                <button id="save-prompt-btn" class="btn btn-primary">
+                    💾 保存文案PROMPT
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- 文案格式化区域 -->
+<div class="text-generation-wrapper">
+    <h3>🎨 文案格式化</h3>
+    <div class="text-generation-grid">
+    <!-- 左侧：格式化PROMPT选择区域 -->
+    <div class="prompt-sidebar">
+
+        <!-- 格式化PROMPT文件列表 -->
+        <div class="prompt-list-container">
+            <div class="prompt-list-wrapper">
+                <div id="format-prompt-list" class="prompt-list">
+                    <!-- 格式化PROMPT文件列表将在这里动态加载 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 提示信息 -->
+        <div class="prompt-hint">
+            <small>💡 双击文件名可将内容加载到右侧编辑框</small>
+        </div>
+    </div>
+
+    <!-- 中间：格式化PROMPT输入区域 -->
+    <div class="prompt-input-section">
+
+        <div class="prompt-input-container">
+            <div class="form-group">
+                <label for="format-prompt-input" class="form-label">格式化PROMPT：</label>
+                <textarea id="format-prompt-input" class="form-control prompt-textarea"
+                    placeholder="请输入格式化文案的提示词，或从左侧选择模板..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button id="format-btn" class="btn btn-warning">
+                    🎨 格式化文案
+                </button>
+                <button id="save-format-prompt-btn" class="btn btn-primary">
+                    💾 保存格式化PROMPT
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- 下方：生成内容展示区域 -->
+<div class="generated-content-section">
+    <div class="content-display-grid">
+        <!-- 左侧：生成的文案 -->
+        <div class="content-display-left">
+            <h3>📄 生成的文案</h3>
+            <div class="generated-content-container">
+                <textarea id="generated-content" class="form-control generated-textarea" placeholder="生成的文案将显示在这里..."
+                    readonly></textarea>
+            </div>
+            <!-- 状态显示 -->
+            <div id="status-message" class="status-message">
+                <!-- 状态信息将在这里显示 -->
+            </div>
+        </div>
+        
+        <!-- 右侧：格式化后的文案 -->
+        <div class="content-display-right">
+            <h3>✨ 格式化后的文案</h3>
+            <div class="generated-content-container">
+                <textarea id="formatted-content" class="form-control generated-textarea" placeholder="格式化后的文案将显示在这里..."
+                    readonly></textarea>
+            </div>
+            <!-- 格式化状态显示 -->
+            <div id="format-status-message" class="status-message">
+                <!-- 格式化状态信息将在这里显示 -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/pages/text-generation.js' %}"></script>
+{% endblock %}
